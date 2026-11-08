@@ -59,31 +59,34 @@ Vector *vector_alloc(const size_t capacity, const size_t element_size) {
     return vector;
 }
 
-Vector *vector_copy(const Vector *vector) {
-    if (vector == NULL) return NULL;
+void vector_free(Vector *vector) {
+    if (vector == NULL) return;
+    free(vector->data);
+    free(vector);
+}
 
-    Vector *copy = malloc(sizeof(Vector));
-    if (copy == NULL) return NULL;
+void *vector_at(const Vector *vector, size_t pos) {
+    if (vector == NULL || pos >= vector->size) return NULL;
 
-    if (vector->capacity > 0) {
-        copy->data = malloc(vector->capacity * vector->element_size);
-        if (copy->data == NULL) {
-            free(copy);
-            return NULL;
-        }
+    return ELEM_OFFSET(vector->data, pos);
+}
 
-        if (vector->size > 0)
-            memcpy(copy->data, vector->data, ELEM_BYTES(vector->size));
+void *vector_front(const Vector *vector) {
+    if (vector == NULL || vector->size == 0) return NULL;
 
-    } else {
-        copy->data = NULL;
-    }
+    return ELEM_OFFSET(vector->data, 0);
+}
 
-    copy->size = vector->size;
-    copy->capacity = vector->capacity;
-    copy->element_size = vector->element_size;
+void *vector_back(const Vector *vector) {
+    if (vector == NULL || vector->size == 0) return NULL;
 
-    return copy;
+    return ELEM_OFFSET(vector->data, vector->size - 1);
+}
+
+bool vector_empty(const Vector *vector) {
+    if (vector == NULL) return false;
+
+    return vector->size == 0;
 }
 
 int vector_reserve(Vector *vector, const size_t capacity) {
@@ -93,31 +96,15 @@ int vector_reserve(Vector *vector, const size_t capacity) {
     return adjust_capacity(vector, capacity);
 }
 
-int vector_push_back(Vector *vector, const void *value) {
-    if (vector == NULL || value == NULL) return VECTOR_ERROR;
+int vector_shrink_to_fit(Vector *vector) {
+    if (vector == NULL) return VECTOR_ERROR;
 
-    // Size being equal to capacity means that either the
-    // vector is full or that it is empty with 0 capacity.
-    if (vector->size == vector->capacity) {
-        size_t new_capacity;
-        uint8_t *new_buffer = alloc_new_buffer(vector->capacity,
-                                               vector->element_size,
-                                               &new_capacity);
-        if (new_buffer == NULL) return VECTOR_ERROR;
+    return adjust_capacity(vector, vector->size);
+}
 
-        memcpy(SIZE_OFFSET(new_buffer), value, vector->element_size);
-
-        if (vector->size > 0)
-            memcpy(new_buffer, vector->data, ELEM_BYTES(vector->size));
-
-        free(vector->data);
-        vector->data = new_buffer;
-        vector->capacity = new_capacity;
-    } else {
-        memcpy(SIZE_OFFSET(vector->data), value, vector->element_size);
-    }
-
-    vector->size++;
+int vector_clear(Vector *vector) {
+    if (vector == NULL) return NULL;
+    vector->size = 0;
 
     return VECTOR_SUCCESS;
 }
@@ -171,22 +158,41 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
     return VECTOR_SUCCESS;
 }
 
-void *vector_at(const Vector *vector, size_t pos) {
-    if (vector == NULL || pos >= vector->size) return NULL;
-
-    return ELEM_OFFSET(vector->data, pos);
+int vector_erase(Vector *vector, const size_t pos) {
+    // TODO: Implement
 }
 
-void *vector_front(const Vector *vector) {
-    if (vector == NULL || vector->size == 0) return NULL;
+int vector_push_back(Vector *vector, const void *value) {
+    if (vector == NULL || value == NULL) return VECTOR_ERROR;
 
-    return ELEM_OFFSET(vector->data, 0);
+    // Size being equal to capacity means that either the
+    // vector is full or that it is empty with 0 capacity.
+    if (vector->size == vector->capacity) {
+        size_t new_capacity;
+        uint8_t *new_buffer = alloc_new_buffer(vector->capacity,
+                                               vector->element_size,
+                                               &new_capacity);
+        if (new_buffer == NULL) return VECTOR_ERROR;
+
+        memcpy(SIZE_OFFSET(new_buffer), value, vector->element_size);
+
+        if (vector->size > 0)
+            memcpy(new_buffer, vector->data, ELEM_BYTES(vector->size));
+
+        free(vector->data);
+        vector->data = new_buffer;
+        vector->capacity = new_capacity;
+    } else {
+        memcpy(SIZE_OFFSET(vector->data), value, vector->element_size);
+    }
+
+    vector->size++;
+
+    return VECTOR_SUCCESS;
 }
 
-void *vector_back(const Vector *vector) {
-    if (vector == NULL || vector->size == 0) return NULL;
-
-    return ELEM_OFFSET(vector->data, vector->size - 1);
+int vector_pop_back(Vector *vector) {
+    // TODO: Implement
 }
 
 int vector_resize(Vector *vector, const size_t new_size) {
@@ -205,14 +211,29 @@ int vector_resize(Vector *vector, const size_t new_size) {
     return VECTOR_SUCCESS;
 }
 
-int vector_shrink_to_fit(Vector *vector) {
-    if (vector == NULL) return VECTOR_ERROR;
+Vector *vector_copy(const Vector *vector) {
+    if (vector == NULL) return NULL;
 
-    return adjust_capacity(vector, vector->size);
-}
+    Vector *copy = malloc(sizeof(Vector));
+    if (copy == NULL) return NULL;
 
-void vector_free(Vector *vector) {
-    if (vector == NULL) return;
-    free(vector->data);
-    free(vector);
+    if (vector->capacity > 0) {
+        copy->data = malloc(vector->capacity * vector->element_size);
+        if (copy->data == NULL) {
+            free(copy);
+            return NULL;
+        }
+
+        if (vector->size > 0)
+            memcpy(copy->data, vector->data, ELEM_BYTES(vector->size));
+
+    } else {
+        copy->data = NULL;
+    }
+
+    copy->size = vector->size;
+    copy->capacity = vector->capacity;
+    copy->element_size = vector->element_size;
+
+    return copy;
 }

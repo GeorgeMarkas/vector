@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,6 +12,7 @@ typedef struct {
     // TODO: Optional function pointer to element destructor
 } Vector;
 
+// TODO: Flesh our error codes
 #define VECTOR_SUCCESS 0
 #define VECTOR_ERROR (-1)
 
@@ -24,40 +26,11 @@ typedef struct {
 Vector *vector_alloc(size_t capacity, size_t element_size);
 
 /**
- * Copy vector contents into a newly allocated vector.
+ * Free all memory associated with the vector.
  *
- * @param vector Vector to copy
- * @return Pointer to the newly allocated vector or NULL on error
+ * @param vector Vector to free
  */
-Vector *vector_copy(const Vector *vector);
-
-/**
- * Reserve capacity for a minimum number of elements.
- *
- * @param vector   Vector to reserve capacity in
- * @param capacity Element capacity to guarantee
- * @return `VECTOR_SUCCESS` on success or an error code on failure
- */
-int vector_reserve(Vector *vector, size_t capacity);
-
-/**
- * Append an element to the end of the vector.
- *
- * @param vector Vector to append to
- * @param value  Pointer to data
- * @return `VECTOR_SUCCESS` on success or an error code on failure
- */
-int vector_push_back(Vector *vector, const void *value);
-
-/**
- * Insert an element at the specified position in the vector.
- *
- * @param vector Vector to insert into
- * @param pos    Index to insert at
- * @param value  Pointer to data
- * @return `VECTOR_SUCCESS` on success or an error code on failure
- */
-int vector_insert(Vector *vector, size_t pos, const void *value);
+void vector_free(Vector *vector);
 
 /**
  * Get a pointer to the element at the specified position in the vector.
@@ -85,6 +58,75 @@ void *vector_front(const Vector *vector);
 void *vector_back(const Vector *vector);
 
 /**
+ * Checks if the vector has no elements.
+ *
+ * @param vector Vector to check
+ * @return `true` if the vector is empty, `false` otherwise
+ */
+bool vector_empty(const Vector *vector);
+
+/**
+ * Reserve capacity for a minimum number of elements.
+ *
+ * @param vector   Vector to reserve capacity in
+ * @param capacity Element capacity to guarantee
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_reserve(Vector *vector, size_t capacity);
+
+/**
+ * Remove unused capacity.
+ *
+ * @param vector Vector to trim
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_shrink_to_fit(Vector *vector);
+
+/**
+ * Removes all elements from the vector.
+ *
+ * @param vector Vector to clear
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_clear(Vector *vector);
+
+/**
+ * Insert an element at the specified position in the vector.
+ *
+ * @param vector Vector to insert into
+ * @param pos    Index to insert at
+ * @param value  Pointer to data
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_insert(Vector *vector, size_t pos, const void *value);
+
+/**
+ * Remove the element at the specified position in the vector.
+ *
+ * @param vector Vector to remove from
+ * @param pos    Element index
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_erase(Vector *vector, size_t pos);
+
+/**
+ * Append an element to the end of the vector.
+ *
+ * @param vector Vector to append to
+ * @param value  Pointer to data
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_push_back(Vector *vector, const void *value);
+
+/**
+ * Remove the last element of the vector.
+ *
+ * @param vector Vector to remove from
+ * @return `VECTOR_SUCCESS` on success or an error code on failure
+ */
+int vector_pop_back(Vector *vector);
+
+/**
  * Resize the vector to contain `new_size` elements.
  *
  * @param vector   Vector to resize
@@ -94,16 +136,9 @@ void *vector_back(const Vector *vector);
 int vector_resize(Vector *vector, size_t new_size);
 
 /**
- * Remove unused capacity.
- * 
- * @param vector Vector to trim
- * @return `VECTOR_SUCCESS` on success or an error code on failure
- */
-int vector_shrink_to_fit(Vector *vector);
-
-/**
- * Free all memory associated with the vector.
+ * Copy vector contents into a newly allocated vector.
  *
- * @param vector Vector to free
+ * @param vector Vector to copy
+ * @return Pointer to the newly allocated vector or NULL on error
  */
-void vector_free(Vector *vector);
+Vector *vector_copy(const Vector *vector);
