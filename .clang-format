@@ -27,3 +27,4 @@ SpaceBeforeCaseColon: false
 SpacesInContainerLiterals: false
 
 PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 100

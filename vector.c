@@ -7,19 +7,32 @@
 #define TEMP_BUFSIZE 64
 
 #define ELEM_BYTES(element_count) ((element_count) * vector->element_size)
-#define ELEM_OFFSET(base, pos) ((base) + (pos) * vector->element_size)
+#define ELEM_OFFSET(base, pos) ((base) + ELEM_BYTES(pos))
 #define SIZE_OFFSET(base) ((base) + ELEM_BYTES(vector->size))
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
     if (new_capacity > (SIZE_MAX / vector->element_size)) return VECTOR_ERROR;
 
-    uint8_t *resized_buffer = realloc(vector->data,
-                                      new_capacity * vector->element_size);
+    uint8_t *resized_buffer = realloc(vector->data, ELEM_BYTES(new_capacity));
     if (resized_buffer == NULL) return VECTOR_ERROR;
     vector->data = resized_buffer;
     vector->capacity = new_capacity;
 
     return VECTOR_SUCCESS;
+}
+
+static uint8_t *alloc_new_buffer(const size_t capacity,
+                                 const size_t element_size,
+                                 size_t *new_capacity) {
+    if (capacity == 0) {
+        *new_capacity = 1;
+    } else {
+        if (capacity > (SIZE_MAX / GROWTH_FACTOR)) return NULL;
+        *new_capacity = capacity * GROWTH_FACTOR;
+    }
+    if (*new_capacity > (SIZE_MAX / element_size)) return NULL;
+
+    return malloc(*new_capacity * element_size);
 }
 
 Vector *vector_alloc(const size_t capacity, const size_t element_size) {
@@ -86,20 +99,10 @@ int vector_push_back(Vector *vector, const void *value) {
     // Size being equal to capacity means that either the
     // vector is full or that it is empty with 0 capacity.
     if (vector->size == vector->capacity) {
-        // TODO:
         size_t new_capacity;
-        if (vector->capacity == 0) {
-            new_capacity = 1;
-        } else {
-            if (vector->capacity > (SIZE_MAX / GROWTH_FACTOR))
-                return VECTOR_ERROR;
-            new_capacity = vector->capacity * GROWTH_FACTOR;
-        }
-        if (new_capacity > (SIZE_MAX / vector->element_size))
-            return VECTOR_ERROR;
-        // Deduplicate
-
-        uint8_t *new_buffer = malloc(new_capacity * vector->element_size);
+        uint8_t *new_buffer = alloc_new_buffer(vector->capacity,
+                                               vector->element_size,
+                                               &new_capacity);
         if (new_buffer == NULL) return VECTOR_ERROR;
 
         memcpy(SIZE_OFFSET(new_buffer), value, vector->element_size);
@@ -124,33 +127,15 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
         return VECTOR_ERROR;
 
     if (vector->size == vector->capacity) {
-        // TODO:
         size_t new_capacity;
-        if (vector->capacity == 0) {
-            new_capacity = 1;
-        } else {
-            if (vector->capacity > (SIZE_MAX / GROWTH_FACTOR))
-                return VECTOR_ERROR;
-            new_capacity = vector->capacity * GROWTH_FACTOR;
-        }
-        if (new_capacity > (SIZE_MAX / vector->element_size))
-            return VECTOR_ERROR;
-        // Deduplicate
-
-        uint8_t *new_buffer = malloc(new_capacity * vector->element_size);
+        uint8_t *new_buffer = alloc_new_buffer(vector->capacity,
+                                               vector->element_size,
+                                               &new_capacity);
         if (new_buffer == NULL) return VECTOR_ERROR;
 
         if (pos > 0) memcpy(new_buffer, vector->data, ELEM_BYTES(pos));
 
-        // memcpy(new_buffer + pos * vector->element_size, value,
-        //        vector->element_size);
-
         memcpy(ELEM_OFFSET(new_buffer, pos), value, vector->element_size);
-
-        // if (pos < vector->size)
-        //     memcpy(new_buffer + (pos + 1) * vector->element_size,
-        //            vector->data + pos * vector->element_size,
-        //            (vector->size - pos) * vector->element_size);
 
         if (pos < vector->size)
             memcpy(ELEM_OFFSET(new_buffer, pos + 1),
@@ -168,16 +153,13 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
             if (temp == NULL) return VECTOR_ERROR;
         }
 
+        // Copy the data pointed to by `value` to a temporary buffer
+        // before calling memmove, in case `value` points within
+        // the vector.
         memcpy(temp, value, vector->element_size);
-        // memmove(vector->data + (pos + 1) * vector->element_size,
-        //         vector->data + pos * vector->element_size,
-        //         (vector->size - pos) * vector->element_size);
 
         memmove(ELEM_OFFSET(vector->data, pos + 1),
                 ELEM_OFFSET(vector->data, pos), ELEM_BYTES(vector->size - pos));
-
-        // memcpy(vector->data + pos * vector->element_size, temp,
-        //        vector->element_size);
 
         memcpy(ELEM_OFFSET(vector->data, pos), temp, vector->element_size);
 
@@ -187,6 +169,24 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
     vector->size++;
 
     return VECTOR_SUCCESS;
+}
+
+void *vector_at(const Vector *vector, size_t pos) {
+    if (vector == NULL || pos >= vector->size) return NULL;
+    
+    return ELEM_OFFSET(vector->data, pos);
+}
+
+void *vector_front(const Vector *vector) {
+    if (vector == NULL || vector->size == 0) return NULL;
+
+    return ELEM_OFFSET(vector->data, 0);
+}
+
+void *vector_back(const Vector *vector) {
+    if (vector == NULL || vector->size == 0) return NULL;
+
+    return ELEM_OFFSET(vector->data, vector->size - 1);
 }
 
 void vector_free(Vector *vector) {
