@@ -173,7 +173,7 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
 
 void *vector_at(const Vector *vector, size_t pos) {
     if (vector == NULL || pos >= vector->size) return NULL;
-    
+
     return ELEM_OFFSET(vector->data, pos);
 }
 
@@ -187,6 +187,28 @@ void *vector_back(const Vector *vector) {
     if (vector == NULL || vector->size == 0) return NULL;
 
     return ELEM_OFFSET(vector->data, vector->size - 1);
+}
+
+int vector_resize(Vector *vector, const size_t new_size) {
+    if (vector == NULL) return VECTOR_ERROR;
+
+    if (new_size > vector->capacity &&
+        adjust_capacity(vector, new_size) != VECTOR_SUCCESS)
+        return VECTOR_ERROR;
+
+    if (new_size > vector->size)
+        memset(SIZE_OFFSET(vector->data), 0,
+               ELEM_BYTES(new_size - vector->size));
+
+    vector->size = new_size;
+
+    return VECTOR_SUCCESS;
+}
+
+int vector_shrink_to_fit(Vector *vector) {
+    if (vector == NULL) return VECTOR_ERROR;
+
+    return adjust_capacity(vector, vector->size);
 }
 
 void vector_free(Vector *vector) {
