@@ -143,11 +143,8 @@ int vector_resize(Vector *vector, size_t new_size);
 /**
  * Copy vector contents into a newly allocated vector.
  *
- * *dst is overwritten, not freed. If it already points
- * to a live vector, that vector is leaked.
- *
- * @param      src Vector to copy
- * @param[out] dst Address of the pointer that receives the vector copy
+ * @param      src  Vector to copy
+ * @param[out] dest Address of the pointer that receives the vector copy
  * @return VECTOR_SUCCESS on success or an error code on failure
  */
-int vector_copy(const Vector *src, Vector **dst);
+int vector_copy(const Vector *src, Vector **dest);

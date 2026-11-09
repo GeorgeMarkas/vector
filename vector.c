@@ -227,9 +227,9 @@ int vector_resize(Vector *vector, const size_t new_size) {
     return VECTOR_SUCCESS;
 }
 
-int vector_copy(const Vector *src, Vector **dst) {
-    if (src == NULL || dst == NULL) return VECTOR_ILLEGAL_ARG;
-    *dst = NULL;
+int vector_copy(const Vector *src, Vector **dest) {
+    if (src == NULL || dest == NULL) return VECTOR_ILLEGAL_ARG;
+    *dest = NULL;
 
     Vector *copy = malloc(sizeof(Vector));
     if (copy == NULL) return VECTOR_BAD_ALLOC;
@@ -251,7 +251,7 @@ int vector_copy(const Vector *src, Vector **dst) {
     copy->capacity = src->capacity;
     copy->element_size = src->element_size;
 
-    *dst = copy;
+    *dest = copy;
 
     return VECTOR_SUCCESS;
 }
