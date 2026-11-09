@@ -113,6 +113,8 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
     if (vector == NULL || pos > vector->size || value == NULL)
         return VECTOR_ERROR;
 
+    // Size being equal to capacity means that either the
+    // vector is full or that it is empty with 0 capacity.
     if (vector->size == vector->capacity) {
         size_t new_capacity;
         uint8_t *new_buffer = alloc_new_buffer(vector->capacity,
@@ -169,8 +171,6 @@ int vector_erase(Vector *vector, const size_t pos) {
 int vector_push_back(Vector *vector, const void *value) {
     if (vector == NULL || value == NULL) return VECTOR_ERROR;
 
-    // Size being equal to capacity means that either the
-    // vector is full or that it is empty with 0 capacity.
     if (vector->size == vector->capacity) {
         size_t new_capacity;
         uint8_t *new_buffer = alloc_new_buffer(vector->capacity,

@@ -17,27 +17,6 @@ typedef struct {
 #define VECTOR_ERROR (-1)
 
 /**
- * Convenience macro that defines typed accessors for a T vector.
- * Each accessor is a function wrapper for its untyped counterpart,
- * casting the returned pointer to T * and returning the dereferenced
- * value.
- *
- * T must be a single identifier e.g., 'uint32_t', not 'unsigned int'.
- */
-#define VECTOR_DEFINE_TYPED_ACCESSORS(T)                                       \
-    static inline T vector_##T##_at(const Vector *vector, size_t pos) {        \
-        return *(T *)vector_at(vector, pos);                                   \
-    }                                                                          \
-                                                                               \
-    static inline T vector_##T##_front(const Vector *vector) {                 \
-        return *(T *)vector_front(vector);                                     \
-    }                                                                          \
-                                                                               \
-    static inline T vector_##T##_back(const Vector *vector) {                  \
-        return *(T *)vector_back(vector);                                      \
-    }
-
-/**
  * Allocate a vector that holds fixed-size elements.
  *
  * @param capacity     Initial element capacity
