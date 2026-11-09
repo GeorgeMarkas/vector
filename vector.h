@@ -17,6 +17,27 @@ typedef struct {
 #define VECTOR_ERROR (-1)
 
 /**
+ * Convenience macro that defines typed accessors for a T vector.
+ * Each accessor is a function wrapper for its untyped counterpart,
+ * casting the returned pointer to T * and returning the dereferenced
+ * value.
+ *
+ * T must be a single identifier e.g., 'uint32_t', not 'unsigned int'.
+ */
+#define VECTOR_DEFINE_TYPED_ACCESSORS(T)                                       \
+    static inline T vector_##T##_at(const Vector *vector, size_t pos) {        \
+        return *(T *)vector_at(vector, pos);                                   \
+    }                                                                          \
+                                                                               \
+    static inline T vector_##T##_front(const Vector *vector) {                 \
+        return *(T *)vector_front(vector);                                     \
+    }                                                                          \
+                                                                               \
+    static inline T vector_##T##_back(const Vector *vector) {                  \
+        return *(T *)vector_back(vector);                                      \
+    }
+
+/**
  * Allocate a vector that holds fixed-size elements.
  *
  * @param capacity     Initial element capacity
@@ -61,7 +82,7 @@ void *vector_back(const Vector *vector);
  * Checks if the vector has no elements.
  *
  * @param vector Vector to check
- * @return `true` if the vector is empty, `false` otherwise
+ * @return true if the vector is empty, false otherwise
  */
 bool vector_empty(const Vector *vector);
 
@@ -70,7 +91,7 @@ bool vector_empty(const Vector *vector);
  *
  * @param vector   Vector to reserve capacity in
  * @param capacity Element capacity to guarantee
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_reserve(Vector *vector, size_t capacity);
 
@@ -78,7 +99,7 @@ int vector_reserve(Vector *vector, size_t capacity);
  * Remove unused capacity.
  *
  * @param vector Vector to trim
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_shrink_to_fit(Vector *vector);
 
@@ -86,7 +107,7 @@ int vector_shrink_to_fit(Vector *vector);
  * Removes all elements from the vector.
  *
  * @param vector Vector to clear
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_clear(Vector *vector);
 
@@ -96,7 +117,7 @@ int vector_clear(Vector *vector);
  * @param vector Vector to insert into
  * @param pos    Index to insert at
  * @param value  Pointer to data
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_insert(Vector *vector, size_t pos, const void *value);
 
@@ -105,7 +126,7 @@ int vector_insert(Vector *vector, size_t pos, const void *value);
  *
  * @param vector Vector to remove from
  * @param pos    Element index
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_erase(Vector *vector, size_t pos);
 
@@ -114,7 +135,7 @@ int vector_erase(Vector *vector, size_t pos);
  *
  * @param vector Vector to append to
  * @param value  Pointer to data
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_push_back(Vector *vector, const void *value);
 
@@ -122,16 +143,16 @@ int vector_push_back(Vector *vector, const void *value);
  * Remove the last element of the vector.
  *
  * @param vector Vector to remove from
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_pop_back(Vector *vector);
 
 /**
- * Resize the vector to contain `new_size` elements.
+ * Resize the vector to contain new_size elements.
  *
  * @param vector   Vector to resize
  * @param new_size New size of the vector
- * @return `VECTOR_SUCCESS` on success or an error code on failure
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_resize(Vector *vector, size_t new_size);
 

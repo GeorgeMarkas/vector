@@ -103,7 +103,7 @@ int vector_shrink_to_fit(Vector *vector) {
 }
 
 int vector_clear(Vector *vector) {
-    if (vector == NULL) return NULL;
+    if (vector == NULL) return VECTOR_ERROR;
     vector->size = 0;
 
     return VECTOR_SUCCESS;
@@ -159,7 +159,11 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
 }
 
 int vector_erase(Vector *vector, const size_t pos) {
-    // TODO: Implement
+    if (vector == NULL || pos >= vector->size) return VECTOR_ERROR;
+    memmove(ELEM_OFFSET(vector->data, pos), ELEM_OFFSET(vector->data, pos + 1),
+            ELEM_BYTES(vector->size - pos - 1));
+
+    return VECTOR_SUCCESS;
 }
 
 int vector_push_back(Vector *vector, const void *value) {
@@ -192,7 +196,10 @@ int vector_push_back(Vector *vector, const void *value) {
 }
 
 int vector_pop_back(Vector *vector) {
-    // TODO: Implement
+    if (vector == NULL || vector->size == 0) return VECTOR_ERROR;
+    vector->size--;
+
+    return VECTOR_SUCCESS;
 }
 
 int vector_resize(Vector *vector, const size_t new_size) {

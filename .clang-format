@@ -1,30 +1,7 @@
-TabWidth: 4
+BasedOnStyle: LLVM
 IndentWidth: 4
-ContinuationIndentWidth: 4
-ColumnLimit: 80
 
-AlignAfterOpenBracket: Align
-AlignEscapedNewlines: Left
-AlignOperands: Align
-
-AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: WithoutElse
 
-BinPackArguments: true
-
-BraceWrapping:
-  BeforeWhile: false
-
-IndentCaseLabels: true
-IndentPPDirectives: AfterHash
-PPIndentWidth: 1
-
-PointerAlignment: Right
-
-SpaceAfterCStyleCast: true
-SpaceBeforeCaseColon: false
-SpacesInContainerLiterals: false
-
-PenaltyBreakAssignment: 100
 PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyBreakAssignment: 100
