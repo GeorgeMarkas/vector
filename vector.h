@@ -12,18 +12,23 @@ typedef struct {
     // TODO: Optional function pointer to element destructor
 } Vector;
 
-// TODO: Flesh our error codes
 #define VECTOR_SUCCESS 0
-#define VECTOR_ERROR (-1)
+
+/* Error codes */
+#define VECTOR_ILLEGAL_ARG  (-1)
+#define VECTOR_BAD_ALLOC    (-2)
+#define VECTOR_LENGTH_ERROR (-3)
+#define VECTOR_OUT_OF_RANGE (-4)
 
 /**
  * Allocate a vector that holds fixed-size elements.
  *
- * @param capacity     Initial element capacity
- * @param element_size Byte size of each element
- * @return Pointer to the newly-allocated vector or NULL on error
+ * @param[out] vector       Address of the pointer that receives the new vector
+ * @param      capacity     Initial element capacity
+ * @param      element_size Byte size of each element
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
-Vector *vector_alloc(size_t capacity, size_t element_size);
+int vector_alloc(Vector **vector, size_t capacity, size_t element_size);
 
 /**
  * Free all memory associated with the vector.
@@ -138,7 +143,11 @@ int vector_resize(Vector *vector, size_t new_size);
 /**
  * Copy vector contents into a newly allocated vector.
  *
- * @param vector Vector to copy
- * @return Pointer to the newly allocated vector or NULL on error
+ * *dst is overwritten, not freed. If it already points
+ * to a live vector, that vector is leaked.
+ *
+ * @param      src Vector to copy
+ * @param[out] dst Address of the pointer that receives the vector copy
+ * @return VECTOR_SUCCESS on success or an error code on failure
  */
-Vector *vector_copy(const Vector *vector);
+int vector_copy(const Vector *src, Vector **dst);
