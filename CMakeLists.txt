@@ -18,9 +18,9 @@ set_source_files_properties(vector.c PROPERTIES COMPILE_OPTIONS -pedantic)
 add_library(${PROJECT_NAME} STATIC vector.c)
 target_compile_options(${PROJECT_NAME} PRIVATE -O2)
 
-if(BUILD_TESTING)
+if (BUILD_TESTING)
     enable_testing()
-    
+
     file(GLOB TEST_SOURCES CONFIGURE_DEPENDS test/*.c)
     add_executable(${TEST_TARGET} ${TEST_SOURCES} vector.c)
     target_include_directories(${TEST_TARGET} PRIVATE ${CMAKE_SOURCE_DIR})
@@ -28,4 +28,4 @@ if(BUILD_TESTING)
     target_link_options(${TEST_TARGET} PRIVATE ${SANITIZER_FLAGS})
 
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
-endif()
+endif ()
