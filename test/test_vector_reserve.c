@@ -55,7 +55,7 @@ UTEST_F(vector_reserve, reserves_writable_capacity) {
     // will have screamed.
 }
 
-UTEST_F(vector_reserve, does_not_mess_with_live_data) {
+UTEST_F(vector_reserve, data_survives_buffer_growth) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
 

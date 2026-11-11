@@ -29,7 +29,7 @@ UTEST_F(vector_shrink_to_fit, removes_unused_capacity) {
     EXPECT_EQ(NULL, utest_fixture->vector->data);
 }
 
-UTEST_F(vector_shrink_to_fit, does_not_mess_with_live_data) {
+UTEST_F(vector_shrink_to_fit, data_survives_buffer_shrinkage) {
     const int expected[10] = {8439201, -153029482, 93847,   2048593821,
                               -49382,  0,          7483921, -1984273849,
                               429496,  12};
