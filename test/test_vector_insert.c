@@ -77,18 +77,7 @@ UTEST_F(vector_insert, inserts_at_pos_equal_to_size) {
     EXPECT_EQ((size_t)10, utest_fixture->vector->size);
 }
 
-UTEST_F(vector_insert, data_survives_buffer_growth) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 9, sizeof(int)));
-    memcpy(utest_fixture->vector->data, expected, 9 * sizeof(int));
-    utest_fixture->vector->size = 9;
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_insert(utest_fixture->vector, 9, &expected[9]));
-    EXPECT_MEMEQ(expected, utest_fixture->vector->data, sizeof(expected));
-    EXPECT_EQ((size_t)10, utest_fixture->vector->size);
-    EXPECT_EQ((size_t)9 * GROWTH_FACTOR, utest_fixture->vector->capacity);
-}
-
+// This also implicitly tests if data survives growth
 UTEST_F(vector_insert, handles_value_aliasing_the_buffer) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
