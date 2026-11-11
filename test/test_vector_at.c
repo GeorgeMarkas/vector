@@ -25,6 +25,7 @@ UTEST_F(vector_at, out_of_range_pos_returns_null) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 0, sizeof(int)));
     ASSERT_EQ(NULL, vector_at(utest_fixture->vector, 0));
+    ASSERT_EQ(NULL, vector_at(utest_fixture->vector, 1));
 }
 
 UTEST_F(vector_at, accesses_element_at_given_pos) {
