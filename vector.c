@@ -11,7 +11,7 @@
 #define SIZE_OFFSET(base)         ((base) + ELEM_BYTES(vector->size))
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
-    // What happens when 0 is passed to realloc is implementation-defined.
+    // What happens when size 0 is passed to realloc is implementation-defined.
     // It's better to explicitly free the buffer and set it to NULL.
     if (new_capacity == 0) {
         free(vector->data);

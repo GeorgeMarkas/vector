@@ -1,6 +1,8 @@
 #include "utest.h"
 #include "vector.h"
 
+#define GROWTH_FACTOR 2
+
 static const int expected[10] = {8439201, -153029482, 93847,   2048593821,
                                  -49382,  0,          7483921, -1984273849,
                                  429496,  12};
@@ -66,5 +68,24 @@ UTEST_F(vector_insert, data_survives_buffer_growth) {
               vector_insert(utest_fixture->vector, 9, &expected[9]));
     EXPECT_MEMEQ(expected, utest_fixture->vector->data, sizeof(expected));
     EXPECT_EQ((size_t)10, utest_fixture->vector->size);
-    EXPECT_EQ((size_t)9 * 2, utest_fixture->vector->capacity);
+    EXPECT_EQ((size_t)9 * GROWTH_FACTOR, utest_fixture->vector->capacity);
+}
+
+UTEST_F(vector_insert, handles_value_aliasing_the_buffer) {
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
+
+    memcpy(utest_fixture->vector->data, expected, sizeof(expected));
+    utest_fixture->vector->size = 10;
+
+    // 'value' points to the buffer half about to be shifted
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_insert(utest_fixture->vector, 4,
+                            &((int *)utest_fixture->vector->data)[6]));
+    EXPECT_MEMEQ(expected, utest_fixture->vector->data, 4 * sizeof(int));
+    EXPECT_EQ(expected[6], ((int *)utest_fixture->vector->data)[4]);
+    EXPECT_MEMEQ(&expected[4], &((int *)utest_fixture->vector->data)[5],
+                 6 * sizeof(int));
+    EXPECT_EQ((size_t)11, utest_fixture->vector->size);
+    EXPECT_EQ((size_t)10 * GROWTH_FACTOR, utest_fixture->vector->capacity);
 }
