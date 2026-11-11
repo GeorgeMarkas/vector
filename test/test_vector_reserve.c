@@ -1,6 +1,10 @@
 #include "utest.h"
 #include "vector.h"
 
+static const int expected[10] = {8439201, -153029482, 93847,   2048593821,
+                                 -49382,  0,          7483921, -1984273849,
+                                 429496,  12};
+
 struct vector_reserve {
     Vector *vector;
 };
@@ -27,26 +31,38 @@ UTEST_F(vector_reserve, capacity_less_than_current_does_nothing) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
     ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 9));
-    ASSERT_EQ(utest_fixture->vector->capacity, (size_t)10);
+    EXPECT_EQ(utest_fixture->vector->capacity, (size_t)10);
 }
 
 UTEST_F(vector_reserve, capacity_equal_to_current_does_nothing) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
     ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 10));
-    ASSERT_EQ(utest_fixture->vector->capacity, (size_t)10);
+    EXPECT_EQ(utest_fixture->vector->capacity, (size_t)10);
 }
 
 UTEST_F(vector_reserve, reserves_writable_capacity) {
-    const int expected[10] = {8439201, -153029482, 93847,   2048593821,
-                              -49382,  0,          7483921, -1984273849,
-                              429496,  12};
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 0, sizeof(int)));
     ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 10));
+    EXPECT_EQ((size_t)10, utest_fixture->vector->capacity);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 10;
+
     EXPECT_MEMEQ(expected, utest_fixture->vector->data, sizeof(expected));
     // Hopefully, if something isn't right by this point, the address sanitizer
     // will have screamed.
+}
+
+UTEST_F(vector_reserve, does_not_mess_with_live_data) {
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
+
+    memcpy(utest_fixture->vector->data, expected, sizeof(expected));
+    utest_fixture->vector->size = 10;
+
+    ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 20));
+    ASSERT_EQ((size_t)20, utest_fixture->vector->capacity);
+    EXPECT_MEMEQ(expected, utest_fixture->vector->data, sizeof(expected));
 }

@@ -11,12 +11,21 @@
 #define SIZE_OFFSET(base)         ((base) + ELEM_BYTES(vector->size))
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
-    if (new_capacity > (SIZE_MAX / vector->element_size))
-        return VECTOR_LENGTH_ERROR;
+    // What happens when 0 is passed to realloc is implementation-defined.
+    // It's better to explicitly free the buffer and set it to NULL.
+    if (new_capacity == 0) {
+        free(vector->data);
+        vector->data = NULL;
+        vector->size = 0;
+    } else {
+        if (new_capacity > (SIZE_MAX / vector->element_size))
+            return VECTOR_LENGTH_ERROR;
 
-    uint8_t *resized_buffer = realloc(vector->data, ELEM_BYTES(new_capacity));
-    if (resized_buffer == NULL) return VECTOR_BAD_ALLOC;
-    vector->data = resized_buffer;
+        uint8_t *resized_buffer = realloc(vector->data,
+                                          ELEM_BYTES(new_capacity));
+        if (resized_buffer == NULL) return VECTOR_BAD_ALLOC;
+        vector->data = resized_buffer;
+    }
     vector->capacity = new_capacity;
 
     return VECTOR_SUCCESS;
@@ -149,8 +158,8 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
             if (temp == NULL) return VECTOR_BAD_ALLOC;
         }
 
-        // Copy the data pointed to by `value` to a temporary buffer
-        // before calling memmove, in case `value` points within
+        // Copy the data pointed to by 'value' to a temporary buffer
+        // before calling memmove, in case 'value' points within
         // the vector.
         memcpy(temp, value, vector->element_size);
 

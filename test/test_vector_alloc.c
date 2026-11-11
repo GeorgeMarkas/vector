@@ -33,20 +33,20 @@ UTEST_F(vector_alloc, capacity_overflow_returns_error) {
 
 UTEST_F(vector_alloc, non_zero_capacity_succeeds) {
     ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 0, sizeof(int)));
-    ASSERT_NE(NULL, utest_fixture->vector);
-    ASSERT_EQ(NULL, utest_fixture->vector->data);
-    EXPECT_EQ((size_t)0, utest_fixture->vector->size);
-    EXPECT_EQ((size_t)0, utest_fixture->vector->capacity);
-    EXPECT_EQ(sizeof(int), utest_fixture->vector->element_size);
-}
-
-UTEST_F(vector_alloc, zero_capacity_succeeds) {
-    ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
     ASSERT_NE(NULL, utest_fixture->vector);
     ASSERT_NE(NULL, utest_fixture->vector->data);
     EXPECT_EQ((size_t)0, utest_fixture->vector->size);
     EXPECT_EQ((size_t)10, utest_fixture->vector->capacity);
+    EXPECT_EQ(sizeof(int), utest_fixture->vector->element_size);
+}
+
+UTEST_F(vector_alloc, zero_capacity_succeeds) {
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 0, sizeof(int)));
+    ASSERT_NE(NULL, utest_fixture->vector);
+    ASSERT_EQ(NULL, utest_fixture->vector->data);
+    EXPECT_EQ((size_t)0, utest_fixture->vector->size);
+    EXPECT_EQ((size_t)0, utest_fixture->vector->capacity);
     EXPECT_EQ(sizeof(int), utest_fixture->vector->element_size);
 }
