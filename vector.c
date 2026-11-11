@@ -182,6 +182,8 @@ int vector_erase(Vector *vector, const size_t pos) {
     memmove(ELEM_OFFSET(vector->data, pos), ELEM_OFFSET(vector->data, pos + 1),
             ELEM_BYTES(vector->size - pos - 1));
 
+    vector->size--;
+
     return VECTOR_SUCCESS;
 }
 

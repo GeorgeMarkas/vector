@@ -21,6 +21,24 @@ UTEST_F_TEARDOWN(vector_insert) {
     (void)utest_result;
 }
 
+UTEST(vector_insert, null_vector_returns_error) {
+    ASSERT_EQ(VECTOR_ILLEGAL_ARG, vector_insert(NULL, 0, &expected[0]));
+}
+
+UTEST_F(vector_insert, null_value_returns_error) {
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
+    ASSERT_EQ(VECTOR_ILLEGAL_ARG,
+              vector_insert(utest_fixture->vector, 0, NULL));
+}
+
+UTEST_F(vector_insert, out_of_range_pos_returns_error) {
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
+    ASSERT_EQ(VECTOR_OUT_OF_RANGE,
+              vector_insert(utest_fixture->vector, 1, &expected[0]));
+}
+
 UTEST_F(vector_insert, inserts_at_pos_zero) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 10, sizeof(int)));
