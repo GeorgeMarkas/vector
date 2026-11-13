@@ -4,11 +4,12 @@
 #include "vector.h"
 
 #define GROWTH_FACTOR 2
-#define TEMP_BUFSIZE  64
+#define TEMP_BUFSIZE 64
 
 #define ELEM_BYTES(element_count) ((element_count) * vector->element_size)
-#define ELEM_OFFSET(base, pos)    ((base) + ELEM_BYTES(pos))
-#define SIZE_OFFSET(base)         ((base) + ELEM_BYTES(vector->size))
+#define ELEM_OFFSET(base, pos) ((base) + ELEM_BYTES(pos))
+#define SIZE_OFFSET(base) ((base) + ELEM_BYTES(vector->size))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
     // What happens when size 0 is passed to realloc is implementation-defined.
@@ -18,7 +19,7 @@ static int adjust_capacity(Vector *vector, size_t new_capacity) {
         vector->data = NULL;
         vector->size = 0;
     } else {
-        if (new_capacity > (SIZE_MAX / vector->element_size))
+        if (new_capacity > SIZE_MAX / vector->element_size)
             return VECTOR_LENGTH_ERROR;
 
         uint8_t *resized_buffer = realloc(vector->data,
@@ -37,10 +38,10 @@ static uint8_t *alloc_new_buffer(const size_t capacity,
     if (capacity == 0) {
         *new_capacity = 1;
     } else {
-        if (capacity > (SIZE_MAX / GROWTH_FACTOR)) return NULL;
+        if (capacity > SIZE_MAX / GROWTH_FACTOR) return NULL;
         *new_capacity = capacity * GROWTH_FACTOR;
     }
-    if (*new_capacity > (SIZE_MAX / element_size)) return NULL;
+    if (*new_capacity > SIZE_MAX / element_size) return NULL;
 
     return malloc(*new_capacity * element_size);
 }
@@ -51,7 +52,7 @@ int vector_alloc(Vector **vector, const size_t capacity,
     *vector = NULL;
 
     if (element_size == 0) return VECTOR_ILLEGAL_ARG;
-    if (capacity > (SIZE_MAX / element_size)) return VECTOR_LENGTH_ERROR;
+    if (capacity > SIZE_MAX / element_size) return VECTOR_LENGTH_ERROR;
 
     Vector *new_vector = malloc(sizeof(Vector));
     if (new_vector == NULL) return VECTOR_BAD_ALLOC;
@@ -158,8 +159,8 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
             if (temp == NULL) return VECTOR_BAD_ALLOC;
         }
 
-        // Copy the data pointed to by 'value' to a temporary buffer
-        // before calling memmove, in case 'value' points within
+        // Copy the data pointed to by `value` to a temporary buffer
+        // before calling memmove, in case `value` points within
         // the vector.
         memcpy(temp, value, vector->element_size);
 
@@ -221,19 +222,22 @@ int vector_pop_back(Vector *vector) {
     return VECTOR_SUCCESS;
 }
 
-int vector_resize(Vector *vector, const size_t new_size) {
+int vector_resize(Vector *vector, const size_t count) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
 
-    if (new_size > vector->capacity) {
-        const int ret = adjust_capacity(vector, new_size);
+    if (count > vector->capacity) {
+        size_t new_capacity = count;
+        if (vector->capacity <= SIZE_MAX / GROWTH_FACTOR)
+            new_capacity = MAX(count, vector->capacity * GROWTH_FACTOR);
+
+        const int ret = adjust_capacity(vector, new_capacity);
         if (ret != VECTOR_SUCCESS) return ret;
     }
 
-    if (new_size > vector->size)
-        memset(SIZE_OFFSET(vector->data), 0,
-               ELEM_BYTES(new_size - vector->size));
+    if (count > vector->size)
+        memset(SIZE_OFFSET(vector->data), 0, ELEM_BYTES(count - vector->size));
 
-    vector->size = new_size;
+    vector->size = count;
 
     return VECTOR_SUCCESS;
 }

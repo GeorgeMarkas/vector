@@ -1,6 +1,5 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
-AlignConsecutiveMacros: Consecutive
 AllowShortIfStatementsOnASingleLine: WithoutElse
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakAssignment: 100

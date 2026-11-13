@@ -132,13 +132,13 @@ int vector_push_back(Vector *vector, const void *value);
 int vector_pop_back(Vector *vector);
 
 /**
- * Resize the vector to contain new_size elements.
+ * Resize the vector to contain `count` elements.
  *
- * @param vector   Vector to resize
- * @param new_size New size of the vector
+ * @param vector Vector to resize
+ * @param count  New size of the vector
  * @return VECTOR_SUCCESS on success or an error code on failure
  */
-int vector_resize(Vector *vector, size_t new_size);
+int vector_resize(Vector *vector, size_t count);
 
 /**
  * Copy vector contents into a newly allocated vector.
