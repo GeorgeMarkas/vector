@@ -12,8 +12,8 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
-    // What happens when size 0 is passed to realloc is implementation-defined.
-    // It's better to explicitly free the buffer and set it to NULL.
+    // Avoid passing size 0 to realloc by explicitly
+    // freeing the buffer for new_capacity 0.
     if (new_capacity == 0) {
         free(vector->data);
         vector->data = NULL;
