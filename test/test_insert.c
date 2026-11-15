@@ -89,7 +89,7 @@ UTEST_F(insert, triggers_buffer_growth_when_vector_is_full) {
 
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_insert(utest_fixture->vector, 13, &expected[0]));
-    ASSERT_GE((size_t)14, utest_fixture->vector->capacity);
+    ASSERT_GE(utest_fixture->vector->capacity, (size_t)14);
 }
 
 UTEST_F(insert, data_survives_buffer_growth) {
