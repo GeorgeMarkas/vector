@@ -73,11 +73,11 @@ bool vector_empty(const Vector *vector);
 /**
  * Reserve capacity for a minimum number of elements.
  *
- * @param vector   Vector to reserve capacity in
- * @param capacity Element capacity to guarantee
+ * @param vector  Vector to reserve capacity in
+ * @param new_cap Element capacity to guarantee
  * @return VECTOR_SUCCESS on success or an error code on failure
  */
-int vector_reserve(Vector *vector, size_t capacity);
+int vector_reserve(Vector *vector, size_t new_cap);
 
 /**
  * Remove unused capacity.

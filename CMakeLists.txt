@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(vector VERSION 0.0.1)
+project(vector VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -25,11 +25,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 if(BUILD_TESTING)
     enable_testing()
 
-    file(GLOB TEST_SOURCES CONFIGURE_DEPENDS test/*.c)
+    file(GLOB TEST_SOURCES CONFIGURE_DEPENDS test/test_*.c)
+    list(APPEND TEST_SOURCES test/main.c)
     add_executable(${TEST_TARGET} EXCLUDE_FROM_ALL ${TEST_SOURCES} vector.c)
     target_include_directories(${TEST_TARGET} PRIVATE ${CMAKE_SOURCE_DIR})
     target_compile_options(${TEST_TARGET} PRIVATE
         ${WARNINGS}
+        -Wno-unused-parameter
         ${SANITIZER_FLAGS}
         -g # This is for sanitizer stack traces regardless of config
     )

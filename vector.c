@@ -106,11 +106,11 @@ bool vector_empty(const Vector *vector) {
     return vector->size == 0;
 }
 
-int vector_reserve(Vector *vector, const size_t capacity) {
+int vector_reserve(Vector *vector, const size_t new_cap) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
-    if (capacity <= vector->capacity) return VECTOR_SUCCESS;
+    if (new_cap <= vector->capacity) return VECTOR_SUCCESS;
 
-    return adjust_capacity(vector, capacity);
+    return adjust_capacity(vector, new_cap);
 }
 
 int vector_shrink_to_fit(Vector *vector) {
