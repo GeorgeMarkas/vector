@@ -104,7 +104,7 @@ UTEST_F(insert, data_survives_buffer_growth) {
     ASSERT_EQ(expected[0], ((int *)utest_fixture->vector->data)[13]);
 }
 
-UTEST_F(insert, handles_value_aliasing_the_buffer_when_it_growth_is_triggered) {
+UTEST_F(insert, handles_value_aliasing_the_buffer_when_growth_is_triggered) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
