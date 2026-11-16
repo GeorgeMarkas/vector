@@ -1,8 +1,6 @@
 #include "utest.h"
 #include "vector.h"
 
-#include <string.h>
-
 struct at {
     Vector *vector;
 };

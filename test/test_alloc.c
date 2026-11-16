@@ -1,8 +1,6 @@
 #include "utest.h"
 #include "vector.h"
 
-#include <stddef.h>
-
 struct alloc {
     Vector *vector;
 };

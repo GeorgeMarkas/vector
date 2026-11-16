@@ -1,6 +1,5 @@
 #include "utest.h"
 #include "vector.h"
-#include <unistd.h>
 
 struct empty {
     Vector *vector;

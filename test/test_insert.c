@@ -1,8 +1,6 @@
 #include "utest.h"
 #include "vector.h"
 
-#include <stddef.h>
-
 static const int expected[13] = {632, 207, 910, 1022, 637, 820, 634,
                                  425, 827, 744, 575,  325, 78};
 struct insert {
