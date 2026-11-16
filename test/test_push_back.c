@@ -40,7 +40,7 @@ UTEST_F(push_back, returns_error_code_when_value_pointer_is_null) {
               vector_push_back(utest_fixture->vector, NULL));
 }
 
-UTEST_F(push_back, triggers_buffer_growth_when_vector_is_full) {
+UTEST_F(push_back, grows_buffer_when_vector_is_full) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));

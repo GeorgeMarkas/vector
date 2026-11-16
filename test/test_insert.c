@@ -79,7 +79,7 @@ UTEST_F(insert, returns_error_code_when_pos_is_out_of_range) {
               vector_insert(utest_fixture->vector, size + 1, &expected[0]));
 }
 
-UTEST_F(insert, triggers_buffer_growth_when_vector_is_full) {
+UTEST_F(insert, grows_buffer_when_vector_is_full) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));

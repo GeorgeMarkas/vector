@@ -16,8 +16,6 @@ UTEST_F_TEARDOWN(empty) {
 UTEST_F(empty, returns_true_when_vector_is_empty) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 3, sizeof(int)));
-    ASSERT_EQ_MSG((size_t)0, utest_fixture->vector->size,
-                  "Vector is not empty");
 
     ASSERT_TRUE(vector_empty(utest_fixture->vector));
 }

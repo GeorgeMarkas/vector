@@ -19,7 +19,7 @@ UTEST_F(alloc, allocates_vector_with_requested_capacity) {
 
     ASSERT_NE(NULL, utest_fixture->vector);
     ASSERT_EQ((size_t)0, utest_fixture->vector->size);
-    ASSERT_GE((size_t)13, utest_fixture->vector->capacity);
+    ASSERT_GE(utest_fixture->vector->capacity, (size_t)13);
     ASSERT_EQ(sizeof(int), utest_fixture->vector->element_size);
     ASSERT_NE(NULL, utest_fixture->vector->data);
 }

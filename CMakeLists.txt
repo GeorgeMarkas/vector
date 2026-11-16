@@ -25,8 +25,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 if(BUILD_TESTING)
     enable_testing()
 
-    file(GLOB TEST_SOURCES CONFIGURE_DEPENDS test/test_*.c)
-    list(APPEND TEST_SOURCES test/main.c)
+    file(GLOB TEST_SOURCES CONFIGURE_DEPENDS test/*.c)
     add_executable(${TEST_TARGET} EXCLUDE_FROM_ALL ${TEST_SOURCES} vector.c)
     target_include_directories(${TEST_TARGET} PRIVATE ${CMAKE_SOURCE_DIR})
     target_compile_options(${TEST_TARGET} PRIVATE

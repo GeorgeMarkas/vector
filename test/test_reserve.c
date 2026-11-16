@@ -20,7 +20,7 @@ UTEST_F(reserve, reserves_requested_capacity) {
                   "Requested capacity was pre-allocated");
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 23));
-    ASSERT_GE((size_t)23, utest_fixture->vector->capacity);
+    ASSERT_GE(utest_fixture->vector->capacity, (size_t)23);
 }
 
 UTEST_F(reserve, does_nothing_when_requested_capacity_is_already_available) {
@@ -28,11 +28,21 @@ UTEST_F(reserve, does_nothing_when_requested_capacity_is_already_available) {
               vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_reserve(utest_fixture->vector, 13));
-    ASSERT_GE((size_t)13, utest_fixture->vector->capacity);
+    ASSERT_GE(utest_fixture->vector->capacity, (size_t)13);
 }
 
 UTEST(reserve, returns_error_code_when_vector_pointer_is_null) {
     ASSERT_EQ(VECTOR_ILLEGAL_ARG, vector_reserve(NULL, 13));
+}
+
+UTEST_F(reserve,
+        returns_error_code_when_buffer_size_calculation_would_overflow) {
+    const size_t bad_capacity = SIZE_MAX / sizeof(int) + 1;
+    ASSERT_EQ(VECTOR_SUCCESS,
+              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+
+    ASSERT_EQ(VECTOR_LENGTH_ERROR,
+              vector_reserve(utest_fixture->vector, bad_capacity));
 }
 
 UTEST_F(reserve, data_survives_buffer_growth) {

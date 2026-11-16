@@ -30,8 +30,6 @@ UTEST(back, returns_null_when_vector_pointer_is_null) {
 UTEST_F(back, returns_null_when_vector_is_empty) {
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 3, sizeof(int)));
-    ASSERT_EQ_MSG((size_t)0, utest_fixture->vector->size,
-                  "Vector is not empty");
 
     ASSERT_EQ(NULL, vector_back(utest_fixture->vector));
 }
