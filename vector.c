@@ -46,8 +46,14 @@ static uint8_t *alloc_new_buffer(const size_t capacity,
     return malloc(*new_capacity * element_size);
 }
 
+#ifdef VECTOR_ELEMENT_DESTRUCTOR
+int vector_alloc(Vector **vector, const size_t capacity,
+                 const size_t element_size,
+                 void (*element_destructor)(void *element)) {
+#else
 int vector_alloc(Vector **vector, const size_t capacity,
                  const size_t element_size) {
+#endif
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
     *vector = NULL;
 
@@ -70,7 +76,9 @@ int vector_alloc(Vector **vector, const size_t capacity,
     new_vector->size = 0;
     new_vector->capacity = capacity;
     new_vector->element_size = element_size;
-
+#ifdef VECTOR_ELEMENT_DESTRUCTOR
+    new_vector->element_destructor = element_destructor;
+#endif
     *vector = new_vector;
 
     return VECTOR_SUCCESS;
@@ -78,6 +86,12 @@ int vector_alloc(Vector **vector, const size_t capacity,
 
 void vector_free(Vector *vector) {
     if (vector == NULL) return;
+#ifdef VECTOR_ELEMENT_DESTRUCTOR
+    if (vector->element_destructor != NULL) {
+        for (size_t i = 0; i < vector->size; i++)
+            vector->element_destructor(ELEM_OFFSET(vector->data, i));
+    }
+#endif
     free(vector->data);
     free(vector);
 }

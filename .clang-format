@@ -2,5 +2,6 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortFunctionsOnASingleLine: None
+ReflowComments: IndentOnly
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakAssignment: 100
