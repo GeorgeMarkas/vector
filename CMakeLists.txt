@@ -19,7 +19,7 @@ add_library(${PROJECT_NAME} STATIC vector.c)
 target_compile_options(${PROJECT_NAME} PRIVATE
     ${WARNINGS}
     -Werror
-    $<$<NOT:$<CONFIG:Debug>>:-O2>
+    $<$<NOT:$<CONFIG:Debug>>:-O2> # TODO: Think how this will work with release config
 )
 
 if(BUILD_TESTING)

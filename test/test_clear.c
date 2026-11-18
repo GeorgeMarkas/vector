@@ -15,7 +15,7 @@ UTEST_F_TEARDOWN(clear) {
 
 UTEST_F(clear, removes_all_elements) {
     ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
     utest_fixture->vector->size = 13;
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_clear(utest_fixture->vector));

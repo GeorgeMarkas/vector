@@ -1,5 +1,6 @@
 #include "utest.h"
 #include "vector.h"
+#include <unistd.h>
 
 struct erase {
     Vector *vector;
@@ -19,7 +20,7 @@ UTEST(erase, returns_error_code_when_vector_pointer_is_null) {
 
 UTEST_F(erase, returns_error_code_when_pos_is_out_of_range) {
     ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
 
     const size_t size = utest_fixture->vector->size;
     ASSERT_EQ(VECTOR_OUT_OF_RANGE, vector_erase(utest_fixture->vector, size));
@@ -31,7 +32,7 @@ UTEST_F(erase, removes_element_at_given_pos) {
     const int expected[13] = {977, 273, 372, 650, 730, 20, 916,
                               316, 243, 691, 806, 106, 637};
     ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 

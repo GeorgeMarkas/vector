@@ -9,43 +9,29 @@ typedef struct {
     size_t capacity;
     size_t element_size;
     uint8_t *data;
-#ifdef VECTOR_ELEMENT_DESTRUCTOR
     void (*element_destructor)(void *element);
-#endif
 } Vector;
 
 #define VECTOR_SUCCESS 0
 
 /* Error codes */
-#define VECTOR_ILLEGAL_ARG (-1)
-#define VECTOR_BAD_ALLOC (-2)
+#define VECTOR_ILLEGAL_ARG  (-1)
+#define VECTOR_BAD_ALLOC    (-2)
 #define VECTOR_LENGTH_ERROR (-3)
 #define VECTOR_OUT_OF_RANGE (-4)
 
-#ifdef VECTOR_ELEMENT_DESTRUCTOR
 /**
  * Allocate a vector that holds fixed-size elements.
  *
  * @param[out] vector             Address of the pointer that receives the new vector
  * @param      capacity           Initial element capacity
  * @param      element_size       Byte size of each element
- * @param      element_destructor Pointer to caller-defined destructor
+ * @param      element_destructor Pointer to caller-defined destructor function
  * @return VECTOR_SUCCESS on success or an error code on failure
  */
 int vector_alloc(Vector **vector, const size_t capacity,
                  const size_t element_size,
                  void (*element_destructor)(void *element));
-#else
-/**
- * Allocate a vector that holds fixed-size elements.
- *
- * @param[out] vector       Address of the pointer that receives the new vector
- * @param      capacity     Initial element capacity
- * @param      element_size Byte size of each element
- * @return VECTOR_SUCCESS on success or an error code on failure
- */
-int vector_alloc(Vector **vector, size_t capacity, size_t element_size);
-#endif
 
 /**
  * Free all memory associated with the vector.

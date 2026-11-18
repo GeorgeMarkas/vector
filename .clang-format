@@ -2,6 +2,9 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortFunctionsOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+AlignConsecutiveMacros: Consecutive
+Cpp11BracedListStyle: false
 ReflowComments: IndentOnly
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakAssignment: 100
