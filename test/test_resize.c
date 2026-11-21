@@ -1,16 +1,21 @@
+#include "helpers.h"
 #include "utest.h"
 #include "vector.h"
 
+static const int expected[13] = {693, 430, 503, 673, 0,  108, 321,
+                                 47,  360, 93,  255, 18, 269};
 struct resize {
     Vector *vector;
 };
 
 UTEST_F_SETUP(resize) {
     utest_fixture->vector = NULL;
+    set_up_helpers();
 }
 
 UTEST_F_TEARDOWN(resize) {
     vector_free(utest_fixture->vector);
+    tear_down_helpers();
 }
 
 UTEST_F(resize, resizes_vector_to_given_element_count) {
@@ -44,8 +49,6 @@ UTEST_F(resize,
 }
 
 UTEST_F(resize, data_survives_buffer_growth) {
-    const int expected[13] = {1006, 207, 785, 364, 585, 475, 394,
-                              617,  616, 114, 246, 91,  766};
     ASSERT_EQ(VECTOR_SUCCESS,
               vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
@@ -53,4 +56,22 @@ UTEST_F(resize, data_survives_buffer_growth) {
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_resize(utest_fixture->vector, 23));
     ASSERT_MEMEQ(expected, utest_fixture->vector->data, sizeof(expected));
+}
+
+UTEST_F(resize, calls_destructor_for_elements_to_be_removed) {
+    ASSERT_EQ(VECTOR_SUCCESS, vector_alloc(&utest_fixture->vector, 13,
+                                           sizeof(mock_t), &mock_destroy));
+    alloc_helpers(13);
+
+    for (size_t i = 0; i < 13; i++)
+        mock_emplace_back(utest_fixture->vector, expected[i]);
+
+    ASSERT_EQ(VECTOR_SUCCESS, vector_resize(utest_fixture->vector, 6));
+
+    ASSERT_EQ((unsigned int)7, calls);
+    ASSERT_MEMEQ(&expected[6], values, 7 * sizeof(int));
+    for (size_t i = 6; i < 13; i++) {
+        ASSERT_EQ((uintptr_t)MOCK_OFFSET(utest_fixture->vector->data, i),
+                  addresses[i - 6]);
+    }
 }

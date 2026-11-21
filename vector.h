@@ -15,8 +15,8 @@ typedef struct {
 #define VECTOR_SUCCESS 0
 
 /* Error codes */
-#define VECTOR_ILLEGAL_ARG  (-1)
-#define VECTOR_BAD_ALLOC    (-2)
+#define VECTOR_ILLEGAL_ARG (-1)
+#define VECTOR_BAD_ALLOC (-2)
 #define VECTOR_LENGTH_ERROR (-3)
 #define VECTOR_OUT_OF_RANGE (-4)
 

@@ -15,6 +15,8 @@ extern size_t mock_size;     // Vector size available to the helper functions
 
 void set_up_helpers(void);
 
+void alloc_helpers(const size_t count);
+
 void tear_down_helpers(void);
 
 void mock_emplace_back(Vector *vector, const int num);

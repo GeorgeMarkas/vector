@@ -16,6 +16,13 @@ void set_up_helpers(void) {
     mock_size = 0;
 }
 
+void alloc_helpers(const size_t count) {
+    addresses = calloc(count, sizeof(uintptr_t));
+    values = calloc(count, sizeof(int));
+    assert(addresses != NULL);
+    assert(values != NULL);
+}
+
 void tear_down_helpers(void) {
     free(values);
     free(addresses);
@@ -27,7 +34,7 @@ void mock_emplace_back(Vector *vector, const int num) {
     assert(vector != NULL);
     assert(vector->size < vector->capacity);
 
-    mock_t new_mock = { .num = malloc(sizeof(int)) };
+    mock_t new_mock = {.num = malloc(sizeof(int))};
     assert(new_mock.num != NULL);
 
     *new_mock.num = num;

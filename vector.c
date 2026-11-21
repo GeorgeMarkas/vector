@@ -4,14 +4,12 @@
 #include "vector.h"
 
 #define GROWTH_FACTOR 2
-#define TEMP_BUFSIZE  64
+#define TEMP_BUFSIZE 64
 
-// clang-format off
 #define ELEM_BYTES(element_count) ((element_count) * vector->element_size)
 #define ELEM_OFFSET(base, pos) ((base) + ELEM_BYTES(pos))
 #define SIZE_OFFSET(base) ((base) + ELEM_BYTES(vector->size))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-// clang-format on
 
 static int adjust_capacity(Vector *vector, size_t new_capacity) {
     // Avoid passing size 0 to realloc by explicitly

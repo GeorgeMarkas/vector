@@ -17,15 +17,13 @@ UTEST_F_TEARDOWN(free) {
 }
 
 UTEST_F(free, calls_destructor_for_every_element) {
-    const int expected[13] = { 941, 36, 171, 79,  874, 320, 713,
-                               233, 70, 157, 355, 466, 493 };
-    addresses = calloc(13, sizeof(uintptr_t));
-    values = calloc(13, sizeof(int));
-    ASSERT_NE(NULL, addresses);
-    ASSERT_NE(NULL, values);
+    const int expected[13] = {941, 36, 171, 79,  874, 320, 713,
+                              233, 70, 157, 355, 466, 493};
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_alloc(&utest_fixture->vector, 13,
                                            sizeof(mock_t), &mock_destroy));
+    alloc_helpers(13);
+
     for (size_t i = 0; i < 13; i++)
         mock_emplace_back(utest_fixture->vector, expected[i]);
 
