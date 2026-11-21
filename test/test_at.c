@@ -14,10 +14,11 @@ UTEST_F_TEARDOWN(at) {
 }
 
 UTEST_F(at, accesses_element_at_given_pos) {
-    const int expected[13] = { 534, 168, 1003, 1017, 226, 318, 908,
-                               77,  607, 382,  873,  122, 76 };
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
+    const int expected[13] = {534, 168, 1003, 1017, 226, 318, 908,
+                              77,  607, 382,  873,  122, 76};
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+    
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 
@@ -30,8 +31,8 @@ UTEST(at, returns_null_when_vector_pointer_is_null) {
 }
 
 UTEST_F(at, returns_null_when_pos_is_out_of_range) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
     const size_t size = utest_fixture->vector->size;
     ASSERT_EQ(NULL, vector_at(utest_fixture->vector, size));

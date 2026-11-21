@@ -46,24 +46,19 @@ static uint8_t *alloc_new_buffer(const size_t capacity,
     return malloc(*new_capacity * element_size);
 }
 
-int vector_alloc(Vector **vector, const size_t capacity,
-                 const size_t element_size,
-                 void (*element_destructor)(void *element)) {
-
-    if (vector == NULL) return VECTOR_ILLEGAL_ARG;
-    *vector = NULL;
-
-    if (element_size == 0) return VECTOR_ILLEGAL_ARG;
-    if (capacity > SIZE_MAX / element_size) return VECTOR_LENGTH_ERROR;
+Vector *vector_alloc(const size_t capacity, const size_t element_size,
+                     void (*element_destructor)(void *element)) {
+    if (element_size == 0) return NULL;
+    if (capacity > SIZE_MAX / element_size) return NULL;
 
     Vector *new_vector = malloc(sizeof(Vector));
-    if (new_vector == NULL) return VECTOR_BAD_ALLOC;
+    if (new_vector == NULL) return NULL;
 
     if (capacity > 0) {
         new_vector->data = malloc(capacity * element_size);
         if (new_vector->data == NULL) {
             free(new_vector);
-            return VECTOR_BAD_ALLOC;
+            return NULL;
         }
     } else {
         new_vector->data = NULL;
@@ -74,9 +69,7 @@ int vector_alloc(Vector **vector, const size_t capacity,
     new_vector->element_size = element_size;
     new_vector->element_destructor = element_destructor;
 
-    *vector = new_vector;
-
-    return VECTOR_SUCCESS;
+    return new_vector;
 }
 
 void vector_free(Vector *vector) {
@@ -276,18 +269,17 @@ int vector_resize(Vector *vector, const size_t count) {
     return VECTOR_SUCCESS;
 }
 
-int vector_copy(const Vector *src, Vector **dest) {
-    if (src == NULL || dest == NULL) return VECTOR_ILLEGAL_ARG;
-    *dest = NULL;
+Vector *vector_copy(const Vector *src) {
+    if (src == NULL) return NULL;
 
     Vector *copy = malloc(sizeof(Vector));
-    if (copy == NULL) return VECTOR_BAD_ALLOC;
+    if (copy == NULL) return NULL;
 
     if (src->capacity > 0) {
         copy->data = malloc(src->capacity * src->element_size);
         if (copy->data == NULL) {
             free(copy);
-            return VECTOR_BAD_ALLOC;
+            return NULL;
         }
 
         if (src->size > 0)
@@ -301,7 +293,5 @@ int vector_copy(const Vector *src, Vector **dest) {
     copy->element_size = src->element_size;
     copy->element_destructor = src->element_destructor;
 
-    *dest = copy;
-
-    return VECTOR_SUCCESS;
+    return copy;
 }

@@ -23,8 +23,8 @@ UTEST(erase, returns_error_code_when_vector_pointer_is_null) {
 }
 
 UTEST_F(erase, returns_error_code_when_pos_is_out_of_range) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
     const size_t size = utest_fixture->vector->size;
     ASSERT_EQ(VECTOR_OUT_OF_RANGE, vector_erase(utest_fixture->vector, size));
@@ -33,8 +33,9 @@ UTEST_F(erase, returns_error_code_when_pos_is_out_of_range) {
 }
 
 UTEST_F(erase, removes_element_at_given_pos) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 
@@ -46,8 +47,9 @@ UTEST_F(erase, removes_element_at_given_pos) {
 }
 
 UTEST_F(erase, calls_destructor_for_element_to_be_removed) {
-    ASSERT_EQ(VECTOR_SUCCESS, vector_alloc(&utest_fixture->vector, 13,
-                                           sizeof(mock_t), &mock_destroy));
+    utest_fixture->vector = vector_alloc(13, sizeof(mock_t), &mock_destroy);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     alloc_helpers(13);
 
     for (size_t i = 0; i < 13; i++)

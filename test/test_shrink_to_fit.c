@@ -14,8 +14,8 @@ UTEST_F_TEARDOWN(shrink_to_fit) {
 }
 
 UTEST_F(shrink_to_fit, removes_unused_capacity) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 23, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(23, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
     utest_fixture->vector->size = 13;
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_shrink_to_fit(utest_fixture->vector));
@@ -29,8 +29,9 @@ UTEST(shrink_to_fit, returns_error_code_when_vector_pointer_is_null) {
 UTEST_F(shrink_to_fit, data_survives_buffer_shrinkage) {
     const int expected[13] = {295,  125, 275, 433, 492, 898, 419,
                               1005, 705, 585, 802, 201, 537};
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 23, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(23, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 

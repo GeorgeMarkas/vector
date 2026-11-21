@@ -17,8 +17,8 @@ UTEST_F_TEARDOWN(pop_back) {
 }
 
 UTEST_F(pop_back, removes_last_element) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 3, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(3, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
     utest_fixture->vector->size = 3;
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_pop_back(utest_fixture->vector));
@@ -26,8 +26,8 @@ UTEST_F(pop_back, removes_last_element) {
 }
 
 UTEST_F(pop_back, does_nothing_when_vector_is_empty) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 3, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(3, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
     ASSERT_EQ(VECTOR_SUCCESS, vector_pop_back(utest_fixture->vector));
     ASSERT_EQ((size_t)0, utest_fixture->vector->size);
@@ -40,8 +40,9 @@ UTEST(pop_back, returns_error_code_when_vector_pointer_is_null) {
 UTEST_F(pop_back, calls_destructor_for_last_element) {
     const int expected[3] = {11, 22, 33};
 
-    ASSERT_EQ(VECTOR_SUCCESS, vector_alloc(&utest_fixture->vector, 3,
-                                           sizeof(mock_t), &mock_destroy));
+    utest_fixture->vector = vector_alloc(3, sizeof(mock_t), &mock_destroy);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     alloc_helpers(3);
 
     for (size_t i = 0; i < 3; i++)

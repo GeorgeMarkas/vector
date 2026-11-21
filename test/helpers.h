@@ -4,7 +4,7 @@
 
 #define MOCK_OFFSET(base, pos) ((base) + (pos) * sizeof(mock_t))
 
-typedef struct Mock_Type {
+typedef struct MockType {
     int *num;
 } mock_t;
 

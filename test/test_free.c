@@ -19,9 +19,9 @@ UTEST_F_TEARDOWN(free) {
 UTEST_F(free, calls_destructor_for_every_element) {
     const int expected[13] = {941, 36, 171, 79,  874, 320, 713,
                               233, 70, 157, 355, 466, 493};
+    utest_fixture->vector = vector_alloc(13, sizeof(mock_t), &mock_destroy);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
-    ASSERT_EQ(VECTOR_SUCCESS, vector_alloc(&utest_fixture->vector, 13,
-                                           sizeof(mock_t), &mock_destroy));
     alloc_helpers(13);
 
     for (size_t i = 0; i < 13; i++)

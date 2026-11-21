@@ -14,8 +14,7 @@ UTEST_F_TEARDOWN(alloc) {
 }
 
 UTEST_F(alloc, allocates_vector_with_requested_capacity) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
 
     ASSERT_NE(NULL, utest_fixture->vector);
     ASSERT_EQ((size_t)0, utest_fixture->vector->size);
@@ -26,8 +25,7 @@ UTEST_F(alloc, allocates_vector_with_requested_capacity) {
 }
 
 UTEST_F(alloc, allocates_vector_with_no_buffer_when_requested_capacity_is_0) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 0, sizeof(int), NULL));
+    utest_fixture->vector = vector_alloc(0, sizeof(int), NULL);
 
     ASSERT_NE(NULL, utest_fixture->vector);
     ASSERT_EQ((size_t)0, utest_fixture->vector->size);
@@ -37,20 +35,13 @@ UTEST_F(alloc, allocates_vector_with_no_buffer_when_requested_capacity_is_0) {
     ASSERT_TRUE(NULL == utest_fixture->vector->element_destructor);
 }
 
-UTEST(alloc, returns_error_code_when_vector_pointer_address_is_null) {
-    ASSERT_EQ(VECTOR_ILLEGAL_ARG, vector_alloc(NULL, 13, sizeof(int), NULL));
-}
-
-UTEST_F(alloc, returns_error_code_when_element_size_is_0) {
-    ASSERT_EQ(VECTOR_ILLEGAL_ARG,
-              vector_alloc(&utest_fixture->vector, 13, 0, NULL));
+UTEST_F(alloc, returns_null_when_element_size_is_0) {
+    utest_fixture->vector = vector_alloc(13, 0, NULL);
     ASSERT_EQ(NULL, utest_fixture->vector);
 }
 
-UTEST_F(alloc, returns_error_code_when_buffer_size_calculation_would_overflow) {
+UTEST_F(alloc, returns_null_when_buffer_size_calculation_would_overflow) {
     const size_t bad_capacity = SIZE_MAX / sizeof(int) + 1;
-    ASSERT_EQ(VECTOR_LENGTH_ERROR,
-              vector_alloc(&utest_fixture->vector, bad_capacity, sizeof(int),
-                           NULL));
+    utest_fixture->vector = vector_alloc(bad_capacity, sizeof(int), NULL);
     ASSERT_EQ(NULL, utest_fixture->vector);
 }
