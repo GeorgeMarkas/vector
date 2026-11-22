@@ -46,22 +46,19 @@ static uint8_t *alloc_new_buffer(const size_t capacity,
     return malloc(*new_capacity * element_size);
 }
 
-int vector_alloc(Vector **vector, const size_t capacity,
-                 const size_t element_size) {
-    if (vector == NULL) return VECTOR_ILLEGAL_ARG;
-    *vector = NULL;
-
-    if (element_size == 0) return VECTOR_ILLEGAL_ARG;
-    if (capacity > SIZE_MAX / element_size) return VECTOR_LENGTH_ERROR;
+Vector *vector_alloc(const size_t capacity, const size_t element_size,
+                     void (*element_destructor)(void *element)) {
+    if (element_size == 0) return NULL;
+    if (capacity > SIZE_MAX / element_size) return NULL;
 
     Vector *new_vector = malloc(sizeof(Vector));
-    if (new_vector == NULL) return VECTOR_BAD_ALLOC;
+    if (new_vector == NULL) return NULL;
 
     if (capacity > 0) {
         new_vector->data = malloc(capacity * element_size);
         if (new_vector->data == NULL) {
             free(new_vector);
-            return VECTOR_BAD_ALLOC;
+            return NULL;
         }
     } else {
         new_vector->data = NULL;
@@ -70,14 +67,18 @@ int vector_alloc(Vector **vector, const size_t capacity,
     new_vector->size = 0;
     new_vector->capacity = capacity;
     new_vector->element_size = element_size;
+    new_vector->element_destructor = element_destructor;
 
-    *vector = new_vector;
-
-    return VECTOR_SUCCESS;
+    return new_vector;
 }
 
 void vector_free(Vector *vector) {
     if (vector == NULL) return;
+    if (vector->element_destructor != NULL) {
+        for (size_t i = 0; i < vector->size; i++)
+            vector->element_destructor(ELEM_OFFSET(vector->data, i));
+    }
+
     free(vector->data);
     free(vector);
 }
@@ -115,12 +116,20 @@ int vector_reserve(Vector *vector, const size_t new_cap) {
 
 int vector_shrink_to_fit(Vector *vector) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
+    if (vector->element_destructor != NULL) {
+        for (size_t i = vector->size - 1; i < vector->capacity - 1; i++)
+            vector->element_destructor(ELEM_OFFSET(vector->data, i));
+    }
 
     return adjust_capacity(vector, vector->size);
 }
 
 int vector_clear(Vector *vector) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
+    if (vector->element_destructor != NULL) {
+        for (size_t i = 0; i < vector->size; i++)
+            vector->element_destructor(ELEM_OFFSET(vector->data, i));
+    }
     vector->size = 0;
 
     return VECTOR_SUCCESS;
@@ -180,6 +189,10 @@ int vector_insert(Vector *vector, const size_t pos, const void *value) {
 int vector_erase(Vector *vector, const size_t pos) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
     if (pos >= vector->size) return VECTOR_OUT_OF_RANGE;
+
+    if (vector->element_destructor != NULL)
+        vector->element_destructor(ELEM_OFFSET(vector->data, pos));
+
     memmove(ELEM_OFFSET(vector->data, pos), ELEM_OFFSET(vector->data, pos + 1),
             ELEM_BYTES(vector->size - pos - 1));
 
@@ -217,7 +230,14 @@ int vector_push_back(Vector *vector, const void *value) {
 
 int vector_pop_back(Vector *vector) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
-    if (vector->size > 0) vector->size--;
+    if (vector->size > 0) {
+        // clang-format off
+        if (vector->element_destructor != NULL)
+            vector->element_destructor(ELEM_OFFSET(vector->data, vector->size - 1));
+        // clang-format on
+
+        vector->size--;
+    }
 
     return VECTOR_SUCCESS;
 }
@@ -225,35 +245,41 @@ int vector_pop_back(Vector *vector) {
 int vector_resize(Vector *vector, const size_t count) {
     if (vector == NULL) return VECTOR_ILLEGAL_ARG;
 
-    if (count > vector->capacity) {
-        size_t new_capacity = count;
-        if (vector->capacity <= SIZE_MAX / GROWTH_FACTOR)
-            new_capacity = MAX(count, vector->capacity * GROWTH_FACTOR);
+    if (count < vector->size) {
+        if (vector->element_destructor != NULL) {
+            for (size_t i = count; i < vector->size; i++)
+                vector->element_destructor(ELEM_OFFSET(vector->data, i));
+        }
+    } else {
+        if (count > vector->capacity) {
+            size_t new_capacity = count;
+            if (vector->capacity <= SIZE_MAX / GROWTH_FACTOR)
+                new_capacity = MAX(count, vector->capacity * GROWTH_FACTOR);
 
-        const int ret = adjust_capacity(vector, new_capacity);
-        if (ret != VECTOR_SUCCESS) return ret;
+            const int ret = adjust_capacity(vector, new_capacity);
+            if (ret != VECTOR_SUCCESS) return ret;
+        }
+
+        if (count > vector->size)
+            memset(SIZE_OFFSET(vector->data), 0,
+                   ELEM_BYTES(count - vector->size));
     }
-
-    if (count > vector->size)
-        memset(SIZE_OFFSET(vector->data), 0, ELEM_BYTES(count - vector->size));
-
     vector->size = count;
 
     return VECTOR_SUCCESS;
 }
 
-int vector_copy(const Vector *src, Vector **dest) {
-    if (src == NULL || dest == NULL) return VECTOR_ILLEGAL_ARG;
-    *dest = NULL;
+Vector *vector_copy(const Vector *src) {
+    if (src == NULL) return NULL;
 
     Vector *copy = malloc(sizeof(Vector));
-    if (copy == NULL) return VECTOR_BAD_ALLOC;
+    if (copy == NULL) return NULL;
 
     if (src->capacity > 0) {
         copy->data = malloc(src->capacity * src->element_size);
         if (copy->data == NULL) {
             free(copy);
-            return VECTOR_BAD_ALLOC;
+            return NULL;
         }
 
         if (src->size > 0)
@@ -265,8 +291,7 @@ int vector_copy(const Vector *src, Vector **dest) {
     copy->size = src->size;
     copy->capacity = src->capacity;
     copy->element_size = src->element_size;
+    copy->element_destructor = src->element_destructor;
 
-    *dest = copy;
-
-    return VECTOR_SUCCESS;
+    return copy;
 }

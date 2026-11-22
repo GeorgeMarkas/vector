@@ -16,8 +16,9 @@ UTEST_F_TEARDOWN(insert) {
 }
 
 UTEST_F(insert, inserts_at_pos_0) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, 6 * sizeof(int));
     utest_fixture->vector->size = 6;
 
@@ -30,8 +31,9 @@ UTEST_F(insert, inserts_at_pos_0) {
 }
 
 UTEST_F(insert, inserts_at_pos_less_than_size) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, 6 * sizeof(int));
     utest_fixture->vector->size = 6;
 
@@ -45,8 +47,9 @@ UTEST_F(insert, inserts_at_pos_less_than_size) {
 }
 
 UTEST_F(insert, inserts_at_pos_equal_to_size) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, 6 * sizeof(int));
     utest_fixture->vector->size = 6;
 
@@ -62,8 +65,8 @@ UTEST(insert, returns_error_code_when_vector_pointer_is_null) {
 }
 
 UTEST_F(insert, returns_error_code_when_value_pointer_is_null) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
     utest_fixture->vector->size = 6;
 
     ASSERT_EQ(VECTOR_ILLEGAL_ARG,
@@ -71,8 +74,8 @@ UTEST_F(insert, returns_error_code_when_value_pointer_is_null) {
 }
 
 UTEST_F(insert, returns_error_code_when_pos_is_out_of_range) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
     const size_t size = utest_fixture->vector->size;
     ASSERT_EQ(VECTOR_OUT_OF_RANGE,
@@ -80,8 +83,9 @@ UTEST_F(insert, returns_error_code_when_pos_is_out_of_range) {
 }
 
 UTEST_F(insert, grows_buffer_when_vector_is_full) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 
@@ -91,8 +95,9 @@ UTEST_F(insert, grows_buffer_when_vector_is_full) {
 }
 
 UTEST_F(insert, data_survives_buffer_growth) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 
@@ -103,8 +108,9 @@ UTEST_F(insert, data_survives_buffer_growth) {
 }
 
 UTEST_F(insert, handles_value_aliasing_the_buffer_when_growth_is_triggered) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 13, sizeof(int)));
+    utest_fixture->vector = vector_alloc(13, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
+
     memcpy(utest_fixture->vector->data, expected, sizeof(expected));
     utest_fixture->vector->size = 13;
 

@@ -1,6 +1,9 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
+IndentCaseLabels: true
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortFunctionsOnASingleLine: None
+AllowShortEnumsOnASingleLine: false
+ReflowComments: IndentOnly
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakAssignment: 100

@@ -9,26 +9,27 @@ typedef struct {
     size_t capacity;
     size_t element_size;
     uint8_t *data;
-    // TODO: Optional function pointer to element destructor
+    void (*element_destructor)(void *element);
 } Vector;
 
 #define VECTOR_SUCCESS 0
 
 /* Error codes */
-#define VECTOR_ILLEGAL_ARG  (-1)
-#define VECTOR_BAD_ALLOC    (-2)
+#define VECTOR_ILLEGAL_ARG (-1)
+#define VECTOR_BAD_ALLOC (-2)
 #define VECTOR_LENGTH_ERROR (-3)
 #define VECTOR_OUT_OF_RANGE (-4)
 
 /**
  * Allocate a vector that holds fixed-size elements.
  *
- * @param[out] vector       Address of the pointer that receives the new vector
- * @param      capacity     Initial element capacity
- * @param      element_size Byte size of each element
- * @return VECTOR_SUCCESS on success or an error code on failure
+ * @param capacity           Initial element capacity
+ * @param element_size       Byte size of each element
+ * @param element_destructor Pointer to caller-defined destructor function
+ * @return Pointer to newly allocated vector on success or NULL on failure
  */
-int vector_alloc(Vector **vector, size_t capacity, size_t element_size);
+Vector *vector_alloc(const size_t capacity, const size_t element_size,
+                     void (*element_destructor)(void *element));
 
 /**
  * Free all memory associated with the vector.
@@ -42,7 +43,7 @@ void vector_free(Vector *vector);
  *
  * @param vector Vector to access
  * @param pos    Element index
- * @return Pointer to the element or NULL on error
+ * @return Pointer to the element or NULL on failure
  */
 void *vector_at(const Vector *vector, size_t pos);
 
@@ -50,7 +51,7 @@ void *vector_at(const Vector *vector, size_t pos);
  * Get a pointer to the first element of the vector.
  *
  * @param vector Vector to access
- * @return Pointer to the element or NULL on error
+ * @return Pointer to the element or NULL on failure
  */
 void *vector_front(const Vector *vector);
 
@@ -58,7 +59,7 @@ void *vector_front(const Vector *vector);
  * Get a pointer to the last element of the vector.
  *
  * @param vector Vector to access
- * @return Pointer to the element or NULL on error
+ * @return Pointer to the element or NULL on failure
  */
 void *vector_back(const Vector *vector);
 
@@ -143,8 +144,7 @@ int vector_resize(Vector *vector, size_t count);
 /**
  * Copy vector contents into a newly allocated vector.
  *
- * @param      src  Vector to copy
- * @param[out] dest Address of the pointer that receives the vector copy
- * @return VECTOR_SUCCESS on success or an error code on failure
+ * @param src  Vector to copy
+ * @return Pointer to newly allocated vector on success or NULL on failure
  */
-int vector_copy(const Vector *src, Vector **dest);
+Vector *vector_copy(const Vector *src);

@@ -14,15 +14,15 @@ UTEST_F_TEARDOWN(empty) {
 }
 
 UTEST_F(empty, returns_true_when_vector_is_empty) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 3, sizeof(int)));
+    utest_fixture->vector = vector_alloc(3, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
 
     ASSERT_TRUE(vector_empty(utest_fixture->vector));
 }
 
 UTEST_F(empty, returns_false_when_vector_is_not_empty) {
-    ASSERT_EQ(VECTOR_SUCCESS,
-              vector_alloc(&utest_fixture->vector, 3, sizeof(int)));
+    utest_fixture->vector = vector_alloc(3, sizeof(int), NULL);
+    ASSERT_NE(NULL, utest_fixture->vector);
     utest_fixture->vector->size = 3;
 
     ASSERT_FALSE(vector_empty(utest_fixture->vector));
