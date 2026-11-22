@@ -66,6 +66,7 @@ String string_new(const char *s) {
 }
 
 void string_destroy(void *s) {
+    if (s == NULL) return;
     String string = *(String *)s;
     if (string.ptr != NULL) {
         free(string.ptr);
