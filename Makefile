@@ -13,7 +13,6 @@ TEST_TARGET := $(BUILD_DIR)/tests
 TEST 	 := $(wildcard $(TEST_DIR)/*.c)
 TEST_OBJ := $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST))
 
-CC        ?= gcc
 CFLAGS 	  := -Wall -Wextra -Wcast-qual -Wconversion -Wsign-conversion -Wshadow -std=c99 -pedantic
 SAN_FLAGS := -fsanitize=address,undefined
 
@@ -42,10 +41,11 @@ test: $(TEST_TARGET)
 
 $(TEST_OBJ): $(BUILD_DIR)/%.o: $(TEST_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC) $(TEST_FLAGS) $(INC) -c $< -o $@
+	@$(CC) $(TEST_FLAGS) $(INC) -c $< -o $@
 
 $(TEST_TARGET): $(TEST_OBJ) $(OBJ)
-	$(CC) $(SAN_FLAGS) $^ -o $@
+	@$(CC) $(SAN_FLAGS) $^ -o $@
+	@./$@
 
 clean:
 	rm -rf $(BUILD_DIR)
