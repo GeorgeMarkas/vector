@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # vector
-Dynamic array implementation in C, trying to mimick [std::vector](https://en.cppreference.com/cpp/container/vector)
+Dynamic array implementation in C, trying to mimic [std::vector](https://en.cppreference.com/cpp/container/vector)
 API-wise. It is type-agnostic, i.e, it works with arbitrary element sizes and it supports
 passing in a user-defined destructor for element types that utilize heap allocations.
 
@@ -18,10 +18,6 @@ make debug
 ```
 This will generate `libvector.a` in `build/`. Link against it and include `vector.h`.
 Example usage in project:
-```sh
-cp build/libvector.a vector.h project/vendor
-```
-*Resulting project structure:*
 ```
 project
 ├── include
@@ -86,11 +82,13 @@ int main(void) {
         return -1;
     }
 
-    String s1 = string_new("Hello, ");
-    String s2 = string_new("World!\n");
+    String s1 = string_new("Hello,");
+    String s2 = string_new(" World");
+    String s3 = string_new("!\n");
 
     vector_push_back(strings, &s1);
     vector_push_back(strings, &s2);
+    vector_push_back(strings, &s3);
 
     for (size_t i = 0; i < strings->size; i++) {
         String string = *(String *)vector_at(strings, i);
@@ -102,4 +100,5 @@ int main(void) {
 
     return 0;
 }
+
 ```
