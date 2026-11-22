@@ -18,7 +18,7 @@ make debug
 ```
 This will generate `libvector.a` in `build/`. Link against it and include `vector.h`.
 Example usage in project:
-```
+```sh
 cp build/libvector.a vector.h project/vendor
 ```
 *Resulting project structure:*
@@ -32,7 +32,7 @@ project
     ├── libvector.a
     └── vector.h
 ```
-```
+```sh
 cd project
 cc src/* -Iinclude -Ivendor -o main -Lvendor -lvector
 ```
